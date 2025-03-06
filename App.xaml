@@ -1,0 +1,12 @@
+<Application x:Class="TimeTracker.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TimeTracker"
+             xmlns:vm="clr-namespace:TimeTracker.ViewModels"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <vm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <vm:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <vm:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    </Application.Resources>
+</Application> 
