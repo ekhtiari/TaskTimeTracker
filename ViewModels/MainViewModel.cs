@@ -113,7 +113,24 @@ namespace TimeTracker.ViewModels
             {
                 foreach (var task in Tasks.Where(t => t.IsRunning))
                 {
-                    OnPropertyChanged(nameof(Tasks));
+                    // Calculate current running time for display purposes
+                    if (task.LastStartTime.HasValue)
+                    {
+                        TimeSpan currentSessionTime = DateTime.Now - task.LastStartTime.Value;
+                        
+                        // Create a temporary property with updated total time for display
+                        // This combines the stored TotalTime with the current session time
+                        task.DisplayTotalTime = task.TotalTime + currentSessionTime;
+                        
+                        // Force refresh of task items
+                        OnPropertyChanged(nameof(Tasks));
+                        
+                        // If the selected task is the one running, also refresh it specifically
+                        if (SelectedTask != null && SelectedTask.Id == task.Id)
+                        {
+                            OnPropertyChanged(nameof(SelectedTask));
+                        }
+                    }
                 }
             }
         }

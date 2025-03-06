@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TimeTracker.Models
 {
@@ -19,6 +20,9 @@ namespace TimeTracker.Models
         public TaskStatus Status { get; set; } = TaskStatus.Backlog;
         
         public TimeSpan TotalTime { get; set; } = TimeSpan.Zero;
+        
+        [NotMapped] // This property won't be stored in the database
+        public TimeSpan DisplayTotalTime { get; set; } = TimeSpan.Zero;
         
         public DateTime? LastStartTime { get; set; }
         

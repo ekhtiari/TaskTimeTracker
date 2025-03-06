@@ -27,6 +27,7 @@
         
         <!-- Define the Taskbar Icon in Resources -->
         <tb:TaskbarIcon x:Key="TrayIcon"
+                        IconSource="/Resources/app.ico"
                         ToolTipText="Time Tracker"
                         TrayLeftMouseDown="TrayIcon_TrayLeftMouseDown">
             <tb:TaskbarIcon.ContextMenu>
@@ -104,7 +105,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
                         <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
-                        <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}" Width="100"/>
+                        <DataGridTextColumn Header="Total Time" Binding="{Binding DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}" Width="100"/>
                         <DataGridTemplateColumn Header="Timer" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -176,7 +177,7 @@
                                     <TextBlock Text="{Binding SelectedTask.CreatedAt, StringFormat=\{0:g\}}"/>
                                     
                                     <TextBlock Text="Total Time:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.TotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}"/>
+                                    <TextBlock Text="{Binding SelectedTask.DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}"/>
                                     
                                     <TextBlock Text="Timer Status:" FontWeight="SemiBold" Margin="0,10,0,0"/>
                                     <TextBlock>
