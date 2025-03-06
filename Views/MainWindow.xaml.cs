@@ -22,7 +22,7 @@ namespace TimeTracker.Views
             StateChanged += MainWindow_StateChanged;
         }
         
-        private void MainWindow_StateChanged(object sender, EventArgs e)
+        private void MainWindow_StateChanged(object? sender, EventArgs e)
         {
             if (WindowState == WindowState.Minimized)
             {
@@ -31,7 +31,7 @@ namespace TimeTracker.Views
             }
         }
         
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_Closing(object? sender, CancelEventArgs e)
         {
             // Clean up resources
             _trayIcon.Dispose();
@@ -40,7 +40,7 @@ namespace TimeTracker.Views
             ViewModel.CloseAsync().ConfigureAwait(false);
         }
         
-        private void TrayIcon_TrayLeftMouseDown(object sender, RoutedEventArgs e)
+        private void TrayIcon_TrayLeftMouseDown(object? sender, RoutedEventArgs e)
         {
             // Show the window when the tray icon is clicked
             Show();

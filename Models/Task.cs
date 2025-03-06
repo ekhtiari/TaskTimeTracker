@@ -10,9 +10,9 @@ namespace TimeTracker.Models
         public int Id { get; set; }
         
         [Required]
-        public string Title { get; set; }
+        public required string Title { get; set; }
         
-        public string Description { get; set; }
+        public required string Description { get; set; } = string.Empty;
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         

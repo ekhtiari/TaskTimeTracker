@@ -24,7 +24,7 @@ namespace TimeTracker.Data
                 .ToListAsync();
         }
         
-        public async Task<Models.Task> GetTaskByIdAsync(int id)
+        public async Task<Models.Task?> GetTaskByIdAsync(int id)
         {
             return await _context.Tasks
                 .Include(t => t.TimeLogs)
@@ -56,7 +56,7 @@ namespace TimeTracker.Data
             return true;
         }
         
-        public async Task<Models.Task> StartTaskTimerAsync(int taskId)
+        public async Task<Models.Task?> StartTaskTimerAsync(int taskId)
         {
             var task = await _context.Tasks
                 .Include(t => t.TimeLogs)
@@ -69,6 +69,7 @@ namespace TimeTracker.Data
             var timeLog = new TimeLog
             {
                 TaskId = taskId,
+                Task = task,
                 StartTime = DateTime.Now,
                 Notes = string.Empty // Initialize Notes property to avoid null reference
             };
@@ -82,7 +83,7 @@ namespace TimeTracker.Data
             return task;
         }
         
-        public async Task<Models.Task> StopTaskTimerAsync(int taskId)
+        public async Task<Models.Task?> StopTaskTimerAsync(int taskId)
         {
             var task = await _context.Tasks
                 .Include(t => t.TimeLogs)

@@ -15,11 +15,11 @@ namespace TimeTracker.ViewModels
         private readonly TaskService _taskService;
         private readonly DispatcherTimer _timer;
         
-        private ObservableCollection<Models.Task> _tasks;
-        private Models.Task _selectedTask;
-        private string _newTaskTitle;
-        private string _newTaskDescription;
-        private string _currentTime;
+        private ObservableCollection<Models.Task> _tasks = new();
+        private Models.Task? _selectedTask;
+        private string _newTaskTitle = string.Empty;
+        private string _newTaskDescription = string.Empty;
+        private string _currentTime = string.Empty;
         private bool _isAddingNewTask;
         
         public MainViewModel()
@@ -53,7 +53,7 @@ namespace TimeTracker.ViewModels
             private set => SetProperty(ref _tasks, value);
         }
         
-        public Models.Task SelectedTask
+        public Models.Task? SelectedTask
         {
             get => _selectedTask;
             set => SetProperty(ref _selectedTask, value);
@@ -104,7 +104,7 @@ namespace TimeTracker.ViewModels
             }
         }
         
-        private void Timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object? sender, EventArgs e)
         {
             CurrentTime = DateTime.Now.ToString("HH:mm:ss");
             
@@ -175,11 +175,14 @@ namespace TimeTracker.ViewModels
                 var updatedTask = await _taskService.StartTaskTimerAsync(SelectedTask.Id);
                 
                 // Update the task in the collection
-                int index = Tasks.IndexOf(SelectedTask);
-                if (index >= 0)
+                if (updatedTask != null)
                 {
-                    Tasks[index] = updatedTask;
-                    SelectedTask = updatedTask;
+                    int index = Tasks.IndexOf(SelectedTask);
+                    if (index >= 0)
+                    {
+                        Tasks[index] = updatedTask;
+                        SelectedTask = updatedTask;
+                    }
                 }
             }
             catch (Exception ex)
@@ -197,11 +200,14 @@ namespace TimeTracker.ViewModels
                 var updatedTask = await _taskService.StopTaskTimerAsync(SelectedTask.Id);
                 
                 // Update the task in the collection
-                int index = Tasks.IndexOf(SelectedTask);
-                if (index >= 0)
+                if (updatedTask != null)
                 {
-                    Tasks[index] = updatedTask;
-                    SelectedTask = updatedTask;
+                    int index = Tasks.IndexOf(SelectedTask);
+                    if (index >= 0)
+                    {
+                        Tasks[index] = updatedTask;
+                        SelectedTask = updatedTask;
+                    }
                 }
             }
             catch (Exception ex)

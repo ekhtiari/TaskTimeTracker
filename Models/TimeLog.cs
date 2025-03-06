@@ -13,7 +13,7 @@ namespace TimeTracker.Models
         public int TaskId { get; set; }
         
         [ForeignKey("TaskId")]
-        public Task Task { get; set; }
+        public required Task Task { get; set; }
         
         public DateTime StartTime { get; set; }
         
@@ -23,6 +23,6 @@ namespace TimeTracker.Models
             ? EndTime.Value - StartTime 
             : DateTime.Now - StartTime;
         
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
     }
 } 
