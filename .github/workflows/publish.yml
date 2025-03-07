@@ -46,12 +46,13 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-  # This job is a placeholder for Mac build - WPF is Windows-only
-  # If you want to build for Mac in the future, you'll need to use a cross-platform UI framework
+  
+  # Information job about cross-platform limitations
   publish-info:
     runs-on: ubuntu-latest
     needs: publish-windows
     steps:
-    - name: Mac Build Info
-      run: echo "Note: This WPF application is Windows-only. To support Mac, consider migrating to .NET MAUI or another cross-platform framework." 
+    - name: Display Cross-Platform Information
+      run: |
+        echo "Note: TimeTracker is currently Windows-only as it uses WPF"
+        echo "To support Mac, consider migrating to .NET MAUI or another cross-platform UI framework" 
