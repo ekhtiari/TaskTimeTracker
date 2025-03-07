@@ -8,5 +8,69 @@
         <vm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <vm:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <vm:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        
+        <!-- Button Styles -->
+        <Style x:Key="BaseButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#007BFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#0069D9"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0069D9"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#6C757D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#5A6268"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5A6268"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="ActionButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#28A745"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#218838"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#218838"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#DC3545"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#C82333"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#C82333"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application> 

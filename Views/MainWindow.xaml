@@ -74,168 +74,292 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="300"/>
             </Grid.ColumnDefinitions>
             
-            <!-- Task list -->
-            <Grid Grid.Column="0" Margin="0,0,10,0">
+            <!-- Task list with Add panel -->
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
-                <TextBlock Grid.Row="0" 
-                           Text="Tasks" 
-                           FontSize="18" 
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,5"/>
-                
-                <DataGrid Grid.Row="1"
-                          ItemsSource="{Binding Tasks}"
-                          SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          SelectionMode="Single"
-                          BorderThickness="1"
-                          RowHeaderWidth="0"
-                          GridLinesVisibility="Horizontal"
-                          AlternatingRowBackground="#F5F5F5"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
-                        <DataGridTextColumn Header="Total Time" Binding="{Binding DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}" Width="100"/>
-                        <DataGridTemplateColumn Header="Timer" Width="100">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock>
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                                        <Setter Property="Text" Value="Running"/>
-                                                        <Setter Property="Foreground" Value="Green"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                                                        <Setter Property="Text" Value="Stopped"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <!-- Task list -->
+                <DockPanel Grid.Row="0">
+                    <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" 
+                                   Text="Tasks" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold"/>
+                        
+                        <Button Grid.Column="1" 
+                                Content="Add Task" 
+                                Command="{Binding ShowAddTaskCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </Grid>
+                    
+                    <DataGrid ItemsSource="{Binding Tasks}"
+                              SelectedItem="{Binding SelectedTask}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              RowHeaderWidth="0"
+                              GridLinesVisibility="Horizontal"
+                              AlternatingRowBackground="#F5F5F5"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                            <DataGridTextColumn Header="Total Time" Binding="{Binding DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}" Width="100"/>
+                            <DataGridTemplateColumn Header="Timer" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                            <Setter Property="Text" Value="Running"/>
+                                                            <Setter Property="Foreground" Value="Green"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                            <Setter Property="Text" Value="Stopped"/>
+                                                            <Setter Property="Foreground" Value="Gray"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
             </Grid>
             
-            <!-- Task details and controls -->
-            <Grid Grid.Column="1">
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" 
+                          Width="5" 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Stretch"/>
+            
+            <!-- Right panel with Task Details and Daily Reports -->
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <TextBlock Grid.Row="0" 
-                           Text="Task Details" 
-                           FontSize="18" 
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,5"/>
+                <!-- Task details -->
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" 
+                               Text="Task Details" 
+                               FontSize="18" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,5"/>
                 
-                <!-- Task details view -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <!-- Task details when not adding a new task -->
-                        <StackPanel Visibility="{Binding IsAddingNewTask, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
-                            <!-- No task selected or details -->
-                            <TextBlock Text="No task selected" 
-                                       FontStyle="Italic" 
-                                       Margin="0,10,0,0"
-                                       Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}}"/>
-                            
-                            <!-- Selected task details -->
-                            <Grid Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=true}">
-                                <StackPanel>
-                                    <TextBlock Text="Title:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.Title}" TextWrapping="Wrap"/>
-                                    
-                                    <TextBlock Text="Description:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.Description}" 
-                                               TextWrapping="Wrap"
-                                               Visibility="{Binding SelectedTask.Description, Converter={StaticResource StringToVisibilityConverter}}"/>
-                                    <TextBlock Text="No description" 
-                                               FontStyle="Italic"
-                                               Visibility="{Binding SelectedTask.Description, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=true}"/>
-                                    
-                                    <TextBlock Text="Status:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.Status}"/>
-                                    
-                                    <TextBlock Text="Created At:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.CreatedAt, StringFormat=\{0:g\}}"/>
-                                    
-                                    <TextBlock Text="Total Time:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock Text="{Binding SelectedTask.DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}"/>
-                                    
-                                    <TextBlock Text="Timer Status:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                                    <TextBlock>
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedTask.IsRunning}" Value="True">
-                                                        <Setter Property="Text" Value="Running"/>
-                                                        <Setter Property="Foreground" Value="Green"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding SelectedTask.IsRunning}" Value="False">
-                                                        <Setter Property="Text" Value="Stopped"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    
-                                    <!-- Task controls -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                                        <Button Content="Start"
-                                                Command="{Binding StartTaskCommand}"
-                                                Visibility="{Binding SelectedTask.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}"/>
+                    <!-- Task details view -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <!-- Task details when not adding a new task -->
+                            <StackPanel Visibility="{Binding IsAddingNewTask, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
+                                <!-- No task selected or details -->
+                                <TextBlock Text="No task selected" 
+                                           FontStyle="Italic" 
+                                           Margin="0,10,0,0"
+                                           Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                
+                                <!-- Selected task details -->
+                                <Grid Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=true}">
+                                    <StackPanel>
+                                        <TextBlock Text="Title:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                                        <TextBlock Text="{Binding SelectedTask.Title}" TextWrapping="Wrap"/>
                                         
-                                        <Button Content="Pause"
-                                                Command="{Binding PauseTaskCommand}"
-                                                Visibility="{Binding SelectedTask.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <TextBlock Text="Description:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                                        <TextBlock Text="{Binding SelectedTask.Description}" 
+                                                   TextWrapping="Wrap"
+                                                   Visibility="{Binding SelectedTask.Description, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                        <TextBlock Text="No description" 
+                                                   FontStyle="Italic"
+                                                   Visibility="{Binding SelectedTask.Description, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=true}"/>
                                         
-                                        <Button Content="Complete"
-                                                Command="{Binding CompleteTaskCommand}"/>
+                                        <TextBlock Text="Total Time:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                                        <TextBlock Text="{Binding SelectedTask.DisplayTotalTime, StringFormat=\{0:hh\\:mm\\:ss\}}"/>
                                         
-                                        <Button Content="Delete"
-                                                Command="{Binding DeleteTaskCommand}"/>
+                                        <TextBlock Text="Timer Status:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedTask.IsRunning}" Value="True">
+                                                            <Setter Property="Text" Value="Running"/>
+                                                            <Setter Property="Foreground" Value="Green"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding SelectedTask.IsRunning}" Value="False">
+                                                            <Setter Property="Text" Value="Stopped"/>
+                                                            <Setter Property="Foreground" Value="Gray"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        
+                                        <!-- Task action buttons -->
+                                        <Grid Margin="0,15,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <Button Grid.Column="0" 
+                                                    Content="Start" 
+                                                    Command="{Binding StartTaskCommand}"
+                                                    Margin="0,0,5,0"
+                                                    Style="{StaticResource ActionButtonStyle}"/>
+                                            
+                                            <Button Grid.Column="1" 
+                                                    Content="Pause" 
+                                                    Command="{Binding PauseTaskCommand}"
+                                                    Margin="5,0,5,0"
+                                                    Style="{StaticResource ActionButtonStyle}"/>
+                                            
+                                            <Button Grid.Column="2" 
+                                                    Content="Complete" 
+                                                    Command="{Binding CompleteTaskCommand}"
+                                                    Margin="5,0,0,0"
+                                                    Style="{StaticResource ActionButtonStyle}"/>
+                                        </Grid>
+                                        
+                                        <Button Content="Delete Task" 
+                                                Command="{Binding DeleteTaskCommand}"
+                                                Margin="0,10,0,0"
+                                                Style="{StaticResource DangerButtonStyle}"/>
                                     </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                        
-                        <!-- Add new task form -->
-                        <StackPanel Visibility="{Binding IsAddingNewTask, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="Title:" FontWeight="SemiBold"/>
-                            <TextBox Text="{Binding NewTaskTitle, UpdateSourceTrigger=PropertyChanged}"/>
-                            
-                            <TextBlock Text="Description:" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                            <TextBox Text="{Binding NewTaskDescription, UpdateSourceTrigger=PropertyChanged}"
-                                     AcceptsReturn="True"
-                                     TextWrapping="Wrap"
-                                     Height="100"
-                                     VerticalScrollBarVisibility="Auto"/>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                                <Button Content="Add Task" Command="{Binding AddTaskCommand}"/>
-                                <Button Content="Cancel" Command="{Binding CancelAddTaskCommand}"/>
+                                </Grid>
                             </StackPanel>
-                        </StackPanel>
+                            
+                            <!-- Add new task form -->
+                            <StackPanel Visibility="{Binding IsAddingNewTask, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Add New Task" 
+                                           FontWeight="SemiBold"
+                                           Margin="0,10,0,0"/>
+                                
+                                <TextBlock Text="Title:" 
+                                           Margin="0,15,0,0"/>
+                                <TextBox Text="{Binding NewTaskTitle, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="0,5,0,0"/>
+                                
+                                <TextBlock Text="Description:" 
+                                           Margin="0,15,0,0"/>
+                                <TextBox Text="{Binding NewTaskDescription, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="0,5,0,0"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         Height="100"
+                                         VerticalScrollBarVisibility="Auto"/>
+                                
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,15,0,0">
+                                    <Button Content="Cancel" 
+                                            Command="{Binding CancelAddTaskCommand}"
+                                            Margin="0,0,10,0"
+                                            Style="{StaticResource SecondaryButtonStyle}"/>
+                                    
+                                    <Button Content="Add Task" 
+                                            Command="{Binding AddTaskCommand}"
+                                            Style="{StaticResource PrimaryButtonStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+                
+                <!-- Splitter -->
+                <GridSplitter Grid.Row="1" 
+                              Height="5" 
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Center"/>
+                
+                <!-- Daily time reports -->
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" 
+                               Text="Daily Time Reports" 
+                               FontSize="18" 
+                               FontWeight="SemiBold"
+                               Margin="0,5,0,5"/>
+                    
+                    <!-- Date selector with buttons -->
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" 
+                                   Text="{Binding SelectedDateFormatted}" 
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        
+                        <Button Grid.Column="1" 
+                                Content="Today" 
+                                Command="{Binding ShowTodayCommand}"
+                                Margin="5,0,5,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Padding="5,2"/>
+                        
+                        <Button Grid.Column="2" 
+                                Content="Yesterday" 
+                                Command="{Binding ShowYesterdayCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Padding="5,2"/>
                     </Grid>
-                </ScrollViewer>
+                    
+                    <!-- Daily time report list -->
+                    <DockPanel Grid.Row="2">
+                        <TextBlock DockPanel.Dock="Bottom" 
+                                   Margin="0,5,0,0">
+                            <Run Text="Total: "/>
+                            <Run Text="{Binding TotalTimeForSelectedDate, StringFormat=\{0:hh\\:mm\\:ss\}}" FontWeight="SemiBold"/>
+                        </TextBlock>
+                        
+                        <DataGrid ItemsSource="{Binding DailyTimeReports}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  RowHeaderWidth="0"
+                                  GridLinesVisibility="Horizontal"
+                                  AlternatingRowBackground="#F5F5F5"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Task" Binding="{Binding TaskTitle}" Width="*"/>
+                                <DataGridTextColumn Header="Time" Binding="{Binding TimeSpent, StringFormat=\{0:hh\\:mm\\:ss\}}" Width="100"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Grid>
             </Grid>
         </Grid>
         

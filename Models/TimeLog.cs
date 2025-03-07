@@ -18,6 +18,9 @@ namespace TimeTracker.Models
         public DateTime StartTime { get; set; }
         
         public DateTime? EndTime { get; set; }
+
+        [NotMapped]
+        public DateOnly LogDate => DateOnly.FromDateTime(StartTime);
         
         public TimeSpan Duration => EndTime.HasValue 
             ? EndTime.Value - StartTime 

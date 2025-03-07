@@ -21,6 +21,8 @@ namespace TimeTracker.ViewModels
         private string _newTaskDescription = string.Empty;
         private string _currentTime = string.Empty;
         private bool _isAddingNewTask;
+        private DateOnly _selectedDate = DateOnly.FromDateTime(DateTime.Today);
+        private ObservableCollection<DailyTimeReport> _dailyTimeReports = new();
         
         public MainViewModel()
         {
@@ -42,6 +44,8 @@ namespace TimeTracker.ViewModels
             DeleteTaskCommand = new RelayCommand(_ => DeleteTask(), _ => CanDeleteTask());
             ShowAddTaskCommand = new RelayCommand(_ => ShowAddTask());
             CancelAddTaskCommand = new RelayCommand(_ => CancelAddTask());
+            ShowTodayCommand = new RelayCommand(_ => ShowToday());
+            ShowYesterdayCommand = new RelayCommand(_ => ShowYesterday());
             
             // Load tasks
             LoadTasksAsync();
@@ -83,6 +87,28 @@ namespace TimeTracker.ViewModels
             set => SetProperty(ref _isAddingNewTask, value);
         }
         
+        public DateOnly SelectedDate
+        {
+            get => _selectedDate;
+            set
+            {
+                if (SetProperty(ref _selectedDate, value))
+                {
+                    UpdateDailyTimeReports();
+                }
+            }
+        }
+        
+        public ObservableCollection<DailyTimeReport> DailyTimeReports
+        {
+            get => _dailyTimeReports;
+            private set => SetProperty(ref _dailyTimeReports, value);
+        }
+        
+        public string SelectedDateFormatted => SelectedDate.ToString("yyyy-MM-dd");
+        
+        public TimeSpan TotalTimeForSelectedDate => CalculateTotalTimeForDate(SelectedDate);
+        
         public ICommand AddTaskCommand { get; }
         public ICommand StartTaskCommand { get; }
         public ICommand PauseTaskCommand { get; }
@@ -90,6 +116,8 @@ namespace TimeTracker.ViewModels
         public ICommand DeleteTaskCommand { get; }
         public ICommand ShowAddTaskCommand { get; }
         public ICommand CancelAddTaskCommand { get; }
+        public ICommand ShowTodayCommand { get; }
+        public ICommand ShowYesterdayCommand { get; }
         
         private async void LoadTasksAsync()
         {
@@ -97,6 +125,9 @@ namespace TimeTracker.ViewModels
             {
                 var tasks = await _taskService.GetAllTasksAsync();
                 Tasks = new ObservableCollection<Models.Task>(tasks);
+                
+                // Initial update of daily time reports
+                UpdateDailyTimeReports();
             }
             catch (Exception ex)
             {
@@ -108,30 +139,35 @@ namespace TimeTracker.ViewModels
         {
             CurrentTime = DateTime.Now.ToString("HH:mm:ss");
             
-            // Update running tasks
+            // Update all tasks
             if (Tasks != null)
             {
-                foreach (var task in Tasks.Where(t => t.IsRunning))
+                foreach (var task in Tasks)
                 {
-                    // Calculate current running time for display purposes
-                    if (task.LastStartTime.HasValue)
+                    // For running tasks, include current session time
+                    if (task.IsRunning && task.LastStartTime.HasValue)
                     {
                         TimeSpan currentSessionTime = DateTime.Now - task.LastStartTime.Value;
-                        
-                        // Create a temporary property with updated total time for display
-                        // This combines the stored TotalTime with the current session time
                         task.DisplayTotalTime = task.TotalTime + currentSessionTime;
-                        
-                        // Force refresh of task items
-                        OnPropertyChanged(nameof(Tasks));
-                        
-                        // If the selected task is the one running, also refresh it specifically
-                        if (SelectedTask != null && SelectedTask.Id == task.Id)
-                        {
-                            OnPropertyChanged(nameof(SelectedTask));
-                        }
+                    }
+                    else
+                    {
+                        // For non-running tasks, just use the stored total time
+                        task.DisplayTotalTime = task.TotalTime;
                     }
                 }
+                
+                // Force refresh of task items
+                OnPropertyChanged(nameof(Tasks));
+                
+                // Also refresh the selected task if there is one
+                if (SelectedTask != null)
+                {
+                    OnPropertyChanged(nameof(SelectedTask));
+                }
+                
+                // Update daily time reports if they're being displayed
+                UpdateDailyTimeReports();
             }
         }
         
@@ -296,10 +332,70 @@ namespace TimeTracker.ViewModels
             return SelectedTask != null;
         }
         
+        private void ShowToday()
+        {
+            SelectedDate = DateOnly.FromDateTime(DateTime.Today);
+        }
+        
+        private void ShowYesterday()
+        {
+            SelectedDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+        }
+        
+        private void UpdateDailyTimeReports()
+        {
+            if (Tasks == null || !Tasks.Any()) return;
+            
+            var reports = new ObservableCollection<DailyTimeReport>();
+            
+            foreach (var task in Tasks)
+            {
+                var timeForDay = task.GetTimeForDay(SelectedDate);
+                
+                // Only add tasks that have time logged for the selected day
+                if (timeForDay > TimeSpan.Zero)
+                {
+                    reports.Add(new DailyTimeReport
+                    {
+                        TaskId = task.Id,
+                        TaskTitle = task.Title,
+                        TimeSpent = timeForDay,
+                        Status = task.Status
+                    });
+                }
+            }
+            
+            DailyTimeReports = reports;
+            OnPropertyChanged(nameof(TotalTimeForSelectedDate));
+            OnPropertyChanged(nameof(SelectedDateFormatted));
+        }
+        
+        private TimeSpan CalculateTotalTimeForDate(DateOnly date)
+        {
+            if (Tasks == null || !Tasks.Any()) return TimeSpan.Zero;
+            
+            TimeSpan total = TimeSpan.Zero;
+            
+            foreach (var task in Tasks)
+            {
+                total += task.GetTimeForDay(date);
+            }
+            
+            return total;
+        }
+        
         public async System.Threading.Tasks.Task CloseAsync()
         {
             _timer.Stop();
             await _taskService.CloseAsync();
         }
+    }
+    
+    public class DailyTimeReport
+    {
+        public int TaskId { get; set; }
+        public string TaskTitle { get; set; } = string.Empty;
+        public TimeSpan TimeSpent { get; set; }
+        public Models.TaskStatus Status { get; set; }
     }
 } 
