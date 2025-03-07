@@ -7,6 +7,15 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Authors>TimeTracker Developer</Authors>
+    <Product>TimeTracker</Product>
+    <Description>A time tracking application for managing tasks and tracking time</Description>
+    <Copyright>Copyright © 2024</Copyright>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
