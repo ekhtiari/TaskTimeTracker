@@ -44,12 +44,11 @@ namespace TaskTimeTracker.Services
 
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO Tasks (Title, Description, Status, CreatedAt, TotalTime)
-                VALUES (@Title, @Description, @Status, @CreatedAt, @TotalTime);
+                INSERT INTO Tasks (Title, Status, CreatedAt, TotalTime)
+                VALUES (@Title, @Status, @CreatedAt, @TotalTime);
                 SELECT last_insert_rowid();";
 
             command.Parameters.AddWithValue("@Title", title);
-            command.Parameters.AddWithValue("@Description", DBNull.Value);
             command.Parameters.AddWithValue("@Status", (int)Models.TaskStatus.Backlog);
             command.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow.ToString("O"));
             command.Parameters.AddWithValue("@TotalTime", TimeSpan.Zero.ToString());
@@ -74,11 +73,10 @@ namespace TaskTimeTracker.Services
                 {
                     Id = reader.GetInt32(0),
                     Title = reader.GetString(1),
-                    Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-                    Status = (Models.TaskStatus)reader.GetInt32(3),
-                    CreatedAt = DateTime.Parse(reader.GetString(4)),
-                    TotalTime = TimeSpan.Parse(reader.GetString(5)),
-                    LastStartTime = reader.IsDBNull(6) ? null : DateTime.Parse(reader.GetString(6))
+                    Status = (Models.TaskStatus)reader.GetInt32(2),
+                    CreatedAt = DateTime.Parse(reader.GetString(3)),
+                    TotalTime = TimeSpan.Parse(reader.GetString(4)),
+                    LastStartTime = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                 });
             }
 
@@ -148,11 +146,10 @@ namespace TaskTimeTracker.Services
                 {
                     Id = reader.GetInt32(0),
                     Title = reader.GetString(1),
-                    Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-                    Status = (Models.TaskStatus)reader.GetInt32(3),
-                    CreatedAt = DateTime.Parse(reader.GetString(4)),
-                    TotalTime = TimeSpan.Parse(reader.GetString(5)),
-                    LastStartTime = reader.IsDBNull(6) ? null : DateTime.Parse(reader.GetString(6))
+                    Status = (Models.TaskStatus)reader.GetInt32(2),
+                    CreatedAt = DateTime.Parse(reader.GetString(3)),
+                    TotalTime = TimeSpan.Parse(reader.GetString(4)),
+                    LastStartTime = reader.IsDBNull(5) ? null : DateTime.Parse(reader.GetString(5))
                 };
             }
 
