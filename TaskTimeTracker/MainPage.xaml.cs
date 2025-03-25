@@ -147,11 +147,13 @@ public class TaskViewModel : INotifyPropertyChanged
     private readonly DatabaseService _databaseService;
     private TimeSpan _totalTime;
     private DateTime? _lastStartTime;
+    private TimeSpan _baseTotalTime; // Store the base total time
 
     public TaskViewModel(Models.Task task, DatabaseService databaseService)
     {
         _task = task;
         _databaseService = databaseService;
+        _baseTotalTime = task.TotalTime; // Store the initial total time
         _totalTime = task.TotalTime;
         _lastStartTime = task.LastStartTime;
     }
@@ -194,8 +196,9 @@ public class TaskViewModel : INotifyPropertyChanged
         {
             var currentTime = DateTime.Now;
             var additionalTime = currentTime - _lastStartTime.Value;
-            _totalTime += additionalTime;
-            await _databaseService.UpdateTaskTotalTimeAsync(_task.Id, _totalTime);
+            _baseTotalTime += additionalTime;
+            _totalTime = _baseTotalTime;
+            await _databaseService.UpdateTaskTotalTimeAsync(_task.Id, _baseTotalTime);
         }
         
         await _databaseService.UpdateTaskStatusAsync(_task.Id, Models.TaskStatus.Paused);
@@ -229,8 +232,8 @@ public class TaskViewModel : INotifyPropertyChanged
             {
                 var currentTime = DateTime.Now;
                 var runningTime = currentTime - _lastStartTime.Value;
-                TotalTime = _task.TotalTime + runningTime;
-                _databaseService.UpdateTaskTotalTimeAsync(_task.Id, TotalTime).ConfigureAwait(false);
+                TotalTime = _baseTotalTime + runningTime;
+                // Don't update the database here, only update UI
             }
             catch (Exception)
             {
