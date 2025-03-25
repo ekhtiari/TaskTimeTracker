@@ -128,6 +128,17 @@ public partial class MainPage : ContentPage
             _selectedTask = null;
         }
     }
+
+    public async Task SaveRunningTasksAsync()
+    {
+        foreach (var task in _tasks)
+        {
+            if (task.Status == "Running")
+            {
+                await task.PauseTaskAsync();
+            }
+        }
+    }
 }
 
 public class TaskViewModel : INotifyPropertyChanged
@@ -218,8 +229,8 @@ public class TaskViewModel : INotifyPropertyChanged
             {
                 var currentTime = DateTime.Now;
                 var runningTime = currentTime - _lastStartTime.Value;
-                _totalTime = _totalTime.Add(TimeSpan.FromSeconds(1));
-                OnPropertyChanged(nameof(TotalTime));
+                TotalTime = _task.TotalTime + runningTime;
+                _databaseService.UpdateTaskTotalTimeAsync(_task.Id, TotalTime).ConfigureAwait(false);
             }
             catch (Exception)
             {

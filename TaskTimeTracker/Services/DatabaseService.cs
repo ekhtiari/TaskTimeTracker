@@ -92,8 +92,7 @@ namespace TaskTimeTracker.Services
             command.CommandText = @"
                 UPDATE Tasks 
                 SET Status = @Status,
-                    LastStartTime = @LastStartTime,
-                    TotalTime = @TotalTime
+                    LastStartTime = @LastStartTime
                 WHERE Id = @Id";
 
             command.Parameters.AddWithValue("@Id", taskId);
@@ -102,29 +101,10 @@ namespace TaskTimeTracker.Services
             if (status == Models.TaskStatus.Running)
             {
                 command.Parameters.AddWithValue("@LastStartTime", DateTime.UtcNow.ToString("O"));
-                command.Parameters.AddWithValue("@TotalTime", TimeSpan.Zero.ToString());
-            }
-            else if (status == Models.TaskStatus.Paused)
-            {
-                // Get current task
-                var currentTask = await GetTaskAsync(taskId);
-                if (currentTask != null && currentTask.LastStartTime.HasValue)
-                {
-                    var additionalTime = DateTime.UtcNow - currentTask.LastStartTime.Value;
-                    var newTotalTime = currentTask.TotalTime + additionalTime;
-                    command.Parameters.AddWithValue("@LastStartTime", DBNull.Value);
-                    command.Parameters.AddWithValue("@TotalTime", newTotalTime.ToString());
-                }
-                else
-                {
-                    command.Parameters.AddWithValue("@LastStartTime", DBNull.Value);
-                    command.Parameters.AddWithValue("@TotalTime", currentTask?.TotalTime.ToString() ?? TimeSpan.Zero.ToString());
-                }
             }
             else
             {
                 command.Parameters.AddWithValue("@LastStartTime", DBNull.Value);
-                command.Parameters.AddWithValue("@TotalTime", TimeSpan.Zero.ToString());
             }
 
             await command.ExecuteNonQueryAsync();
