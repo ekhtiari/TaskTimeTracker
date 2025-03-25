@@ -32,7 +32,7 @@ jobs:
         path: TaskTimeTracker/bin/Release/net9.0-windows10.0.19041.0/win10-x64/publish/
         
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
     - uses: actions/checkout@v4
@@ -46,13 +46,20 @@ jobs:
       run: dotnet workload install maui
       
     - name: Build macOS App
-      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-maccatalyst --self-contained
+      env:
+        DOTNET_RUNTIME_IDENTIFIER: maccatalyst-x64
+      run: |
+        dotnet publish TaskTimeTracker/TaskTimeTracker.csproj \
+          -c Release \
+          -f net9.0-maccatalyst18.0 \
+          --self-contained \
+          -p:CreatePackage=true
       
     - name: Upload macOS Artifact
       uses: actions/upload-artifact@v4
       with:
         name: macos-app
-        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst/maccatalyst-x64/publish/
+        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst18.0/maccatalyst-x64/publish/
         
   create-release:
     needs: [build-windows, build-macos]
