@@ -53,19 +53,20 @@ jobs:
         dotnet restore TaskTimeTracker/TaskTimeTracker.csproj
         dotnet publish TaskTimeTracker/TaskTimeTracker.csproj \
           -c Release \
-          -f net9.0-maccatalyst \
+          -f net9.0-maccatalyst18.0 \
           --self-contained \
           -r maccatalyst-x64 \
           -p:CreatePackage=true \
           -p:EnableCodeSigning=false \
           -p:EnablePackageSigning=false \
-          -p:RuntimeIdentifier=maccatalyst-x64
+          -p:RuntimeIdentifier=maccatalyst-x64 \
+          -p:MacCatalystSdkVersion=18.0
       
     - name: Upload macOS Artifact
       uses: actions/upload-artifact@v4
       with:
         name: macos-app
-        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst/maccatalyst-x64/publish/
+        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst18.0/maccatalyst-x64/publish/
         
   create-release:
     needs: [build-windows, build-macos]
