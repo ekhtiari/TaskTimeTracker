@@ -45,6 +45,9 @@ jobs:
     - name: Install MAUI Workload
       run: dotnet workload install maui
       
+    - name: Select Xcode Version
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      
     - name: Build macOS App
       run: |
         dotnet restore TaskTimeTracker/TaskTimeTracker.csproj
@@ -53,7 +56,10 @@ jobs:
           -f net9.0-maccatalyst \
           --self-contained \
           -r maccatalyst-x64 \
-          -p:CreatePackage=true
+          -p:CreatePackage=true \
+          -p:EnableCodeSigning=false \
+          -p:EnablePackageSigning=false \
+          -p:RuntimeIdentifier=maccatalyst-x64
       
     - name: Upload macOS Artifact
       uses: actions/upload-artifact@v4
