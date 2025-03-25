@@ -39,6 +39,17 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async Task PauseRunningTasksAsync()
+    {
+        foreach (var task in _tasks)
+        {
+            if (task.Status == "Running")
+            {
+                await task.PauseTaskAsync();
+            }
+        }
+    }
+
     private async void OnAddTaskClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(NewTaskEntry.Text))
@@ -100,6 +111,7 @@ public partial class MainPage : ContentPage
         }
         else
         {
+            await PauseRunningTasksAsync(); // Pause any running tasks first
             await _selectedTask.StartTaskAsync();
         }
         UpdateSelectedTaskDetails();
