@@ -49,11 +49,12 @@ jobs:
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
           TaskTimeTracker-Windows.zip
         name: Release ${{ github.sha }}
         tag_name: v${{ github.run_number }}
         draft: false
-        prerelease: false
-        token: ${{ secrets.RELEASE_TOKEN }} 
+        prerelease: false 
