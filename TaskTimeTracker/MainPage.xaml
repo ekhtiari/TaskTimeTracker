@@ -12,7 +12,7 @@
                Margin="0,0,10,10"/>
 
         <!-- Main content -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="1" ColumnDefinitions="800,380">
             <!-- Left side - Tasks List -->
             <Grid RowDefinitions="Auto,Auto,*">
                 <Label Text="Tasks" 
@@ -21,7 +21,7 @@
                        Margin="0,0,0,10"/>
 
                 <!-- Add Task Input -->
-                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                <Grid Grid.Row="1" ColumnDefinitions="*,120" Margin="0,0,0,10">
                     <Entry x:Name="NewTaskEntry"
                            Placeholder="Enter new task title"
                            Grid.Column="0"/>
@@ -36,7 +36,7 @@
                             SelectionMode="Single"
                             ItemSelected="OnTaskSelected">
                         <ListView.Header>
-                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" 
+                            <Grid ColumnDefinitions="*,120,120,100" 
                                   Padding="10,5"
                                   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
                                 <Label Text="Title" Grid.Column="0"/>
@@ -48,7 +48,7 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
-                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="10,5">
+                                    <Grid ColumnDefinitions="*,120,120,100" Padding="10,5">
                                         <Label Text="{Binding Title}" Grid.Column="0"/>
                                         <Label Text="{Binding Status}" Grid.Column="1" Margin="10,0"/>
                                         <Label Text="{Binding TotalTime, StringFormat='{0:hh\\:mm\\:ss}'}" Grid.Column="2" Margin="10,0"/>
@@ -64,7 +64,6 @@
             <!-- Right side - Task Details -->
             <Grid Grid.Column="1" 
                   RowDefinitions="Auto,*"
-                  Width="300"
                   Margin="20,0,0,0">
                 
                 <Label Text="Task Details" 
@@ -93,13 +92,20 @@
                     <HorizontalStackLayout Spacing="10">
                         <Button x:Name="PauseButton"
                                 Text="Pause"
+                                WidthRequest="100"
                                 BackgroundColor="#ADD8E6"
                                 Clicked="OnPauseClicked"/>
                         <Button x:Name="CompleteButton"
                                 Text="Complete"
+                                WidthRequest="100"
                                 Clicked="OnCompleteClicked"/>
                         <Button x:Name="DeleteButton"
                                 Text="Delete"
+                                WidthRequest="100"
+                                BackgroundColor="#FFB6C1"
+                                TextColor="Black"
+                                BorderColor="Red"
+                                BorderWidth="1"
                                 Clicked="OnDeleteClicked"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
