@@ -12,47 +12,47 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: '9.0.x'
         
     - name: Install MAUI Workload
       run: dotnet workload install maui
       
     - name: Build Windows App
-      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-windows10.0.19041.0 --self-contained -r win-x64
+      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-windows10.0.19041.0 --self-contained
       
     - name: Upload Windows Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-app
-        path: TaskTimeTracker/bin/Release/net9.0-windows10.0.19041.0/win-x64/publish/
+        path: TaskTimeTracker/bin/Release/net9.0-windows10.0.19041.0/win10-x64/publish/
         
   build-macos:
     runs-on: macos-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: '9.0.x'
         
     - name: Install MAUI Workload
       run: dotnet workload install maui
       
     - name: Build macOS App
-      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-maccatalyst --self-contained -r osx-x64
+      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-maccatalyst --self-contained
       
     - name: Upload macOS Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: macos-app
-        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst/osx-x64/publish/
+        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst/maccatalyst-x64/publish/
         
   create-release:
     needs: [build-windows, build-macos]
@@ -61,22 +61,21 @@ jobs:
     
     steps:
     - name: Download Windows Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: windows-app
         path: windows-app
         
     - name: Download macOS Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: macos-app
         path: macos-app
         
-    - name: Zip Windows App
-      run: cd windows-app && zip -r ../TaskTimeTracker-Windows.zip .
-        
-    - name: Zip macOS App
-      run: cd macos-app && zip -r ../TaskTimeTracker-macOS.zip .
+    - name: Zip Artifacts
+      run: |
+        cd windows-app && zip -r ../TaskTimeTracker-Windows.zip . && cd ..
+        cd macos-app && zip -r ../TaskTimeTracker-macOS.zip . && cd ..
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -84,8 +83,8 @@ jobs:
         files: |
           TaskTimeTracker-Windows.zip
           TaskTimeTracker-macOS.zip
+        name: Release ${{ github.sha }}
         tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
         draft: false
         prerelease: false
       env:
