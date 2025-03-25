@@ -1,0 +1,92 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+        
+    - name: Install MAUI Workload
+      run: dotnet workload install maui
+      
+    - name: Build Windows App
+      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-windows10.0.19041.0 --self-contained -r win-x64
+      
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-app
+        path: TaskTimeTracker/bin/Release/net9.0-windows10.0.19041.0/win-x64/publish/
+        
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+        
+    - name: Install MAUI Workload
+      run: dotnet workload install maui
+      
+    - name: Build macOS App
+      run: dotnet publish TaskTimeTracker/TaskTimeTracker.csproj -c Release -f net9.0-maccatalyst --self-contained -r osx-x64
+      
+    - name: Upload macOS Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-app
+        path: TaskTimeTracker/bin/Release/net9.0-maccatalyst/osx-x64/publish/
+        
+  create-release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Download Windows Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: windows-app
+        path: windows-app
+        
+    - name: Download macOS Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: macos-app
+        path: macos-app
+        
+    - name: Zip Windows App
+      run: cd windows-app && zip -r ../TaskTimeTracker-Windows.zip .
+        
+    - name: Zip macOS App
+      run: cd macos-app && zip -r ../TaskTimeTracker-macOS.zip .
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          TaskTimeTracker-Windows.zip
+          TaskTimeTracker-macOS.zip
+        tag_name: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
