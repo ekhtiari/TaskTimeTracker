@@ -37,6 +37,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
     - name: Download Windows Artifact
       uses: actions/download-artifact@v4
       with:
@@ -48,13 +52,22 @@ jobs:
         cd windows-app && zip -r ../TaskTimeTracker-Windows.zip . && cd ..
         
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      id: create_release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: |
-          TaskTimeTracker-Windows.zip
-        name: Release ${{ github.sha }}
         tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
         draft: false
-        prerelease: false 
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./TaskTimeTracker-Windows.zip
+        asset_name: TaskTimeTracker-Windows.zip
+        asset_content_type: application/zip 
